@@ -2,9 +2,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Archives on Derrick Beining</title>
-    <link>https://derrickbeining.github.io/personal-website-dist/archives/</link>
+    <link>https://derrickbeining.github.io/archives/</link>
     <description>Recent content in Archives on Derrick Beining</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en</language><atom:link href="https://derrickbeining.github.io/personal-website-dist/archives/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language><atom:link href="https://derrickbeining.github.io/archives/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
