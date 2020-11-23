@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Derrick Beining</title>
-    <link>https://derrickbeining.com/post/</link>
+    <link>https://derrickbeining.github.io/personal-website-dist/post/</link>
     <description>Recent content in Posts on Derrick Beining</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 23 Nov 2020 14:07:36 -0500</lastBuildDate><atom:link href="https://derrickbeining.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 23 Nov 2020 14:07:36 -0500</lastBuildDate><atom:link href="https://derrickbeining.github.io/personal-website-dist/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>What&#39;s Algebraic About Algebraic Data Types?</title>
-      <link>https://derrickbeining.com/post/2020/11/whats-algebraic-about-algebraic-data-types/</link>
+      <link>https://derrickbeining.github.io/personal-website-dist/post/2020/11/whats-algebraic-about-algebraic-data-types/</link>
       <pubDate>Mon, 23 Nov 2020 14:07:36 -0500</pubDate>
       
-      <guid>https://derrickbeining.com/post/2020/11/whats-algebraic-about-algebraic-data-types/</guid>
+      <guid>https://derrickbeining.github.io/personal-website-dist/post/2020/11/whats-algebraic-about-algebraic-data-types/</guid>
       <description>&lt;p&gt;If you&amp;rsquo;re relatively new to the statically-typed functional programming scene, there&amp;rsquo;s a good chance you&amp;rsquo;ve encountered these fancy-sounding things called &amp;ldquo;algebraic data types&amp;rdquo; (often abbreviated as ADTs), and have been left feeling both a little intimidated by them and confused about what they have to do with algebra. That was my initial experience with them, anyway. I&amp;rsquo;d like to try offering a beginner-friendly introduction to them in a fashion that I think would have helped me understand them sooner.&lt;/p&gt;</description>
     </item>
     
