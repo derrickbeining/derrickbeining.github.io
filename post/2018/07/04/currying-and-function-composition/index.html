@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.78.2" />
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+<meta name="msapplication-TileColor" content="#da532c" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+<title>Currying and Function Composition - Hi, I&#39;m Derrick.</title>
+
+
+<meta name="author" content="Derrick Beining" />
+
+
+<meta name="description" content="A minimal Hugo theme with nice theme color." />
+
+
+<meta property="og:title" content="Currying and Function Composition" />
+<meta property="og:description" content="I want to demonstrate two foundational techniques you need to know to practice functional programming: function composition and curried functions. We&rsquo;ll learn what these terms mean, how to implement them, and the advantages of using them.
+These techniques are applicable in any programming language where functions are first-class values, meaning they can be passed around like any primitive value. For the purposes of this post, we will be implementing these patterns in JavaScript.
+Function Composition Function composition sounds fancy, but it&rsquo;s really not. It&rsquo;s actually just a way to automate something we all do manually anyway.
+Imagine we have these three functions:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://derrickbeining.github.io/post/2018/07/04/currying-and-function-composition/" />
+<meta property="og:image" content="https://derrickbeining.github.io/img/og.png"/>
+<meta property="article:published_time" content="2018-07-04T15:57:29-05:00" />
+<meta property="article:modified_time" content="2018-07-04T15:57:29-05:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://derrickbeining.github.io/img/og.png"/>
+
+<meta name="twitter:title" content="Currying and Function Composition"/>
+<meta name="twitter:description" content="I want to demonstrate two foundational techniques you need to know to practice functional programming: function composition and curried functions. We&rsquo;ll learn what these terms mean, how to implement them, and the advantages of using them.
+These techniques are applicable in any programming language where functions are first-class values, meaning they can be passed around like any primitive value. For the purposes of this post, we will be implementing these patterns in JavaScript.
+Function Composition Function composition sounds fancy, but it&rsquo;s really not. It&rsquo;s actually just a way to automate something we all do manually anyway.
+Imagine we have these three functions:"/>
+
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+<link rel="stylesheet" href="https://derrickbeining.github.io/assets/css/fuji.min.css" />
+
+
+
+
+
+</head>
+
+<body data-theme="auto">
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://derrickbeining.github.io/">Hi, I&#39;m Derrick.</a>
+            
+            <span class="title-sub">I&#39;m a software engineer and sometime I write about it</span>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://derrickbeining.github.io/post/2018/07/04/currying-and-function-composition/">Currying and Function Composition</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2018-07-04</span><span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;1172 words</span><span><i class="iconfont icon-time-sharp"></i>&nbsp;6 minutes</span><span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
+
+    </div>
+    
+    
+    <div class="post-content markdown-body">
+        <p>I want to demonstrate two foundational techniques you need to know to practice functional programming: function composition and curried functions. We&rsquo;ll learn what these terms mean, how to implement them, and the advantages of using them.</p>
+<p>These techniques are applicable in any programming language where functions are first-class values, meaning they can be passed around like any primitive value. For the purposes of this post, we will be implementing these patterns in JavaScript.</p>
+<h2 id="function-composition">Function Composition</h2>
+<p>Function composition sounds fancy, but it&rsquo;s really not. It&rsquo;s actually just a way to automate something we all do manually anyway.</p>
+<p>Imagine we have these three functions:</p>
+<pre><code class="language-js">const getDescription = (obj) =&gt; obj.description
+const truncate = (str) =&gt; str.slice(0, 100)
+const appendEllipsis = (str) =&gt; `${str}...`
+</code></pre>
+<p>And we want to get the description from an item and format it to be 100 characters max and with a trailing ellipsis.</p>
+<p>Without function composition, we might do something this:</p>
+<pre><code class="language-js">const description = getDescription(item)
+const truncatedDescription = truncate(description)
+const descriptionWithEllipsis = appendEllipsis(truncatedDescription)
+</code></pre>
+<p>We set the return value of some function to a variable, and then turn around and pass that variable into the next function, and so on. This is a really common practice for most programmers. The only purpose of those variables is to pass them to the next function, so really we could just do this:</p>
+<pre><code class="language-js">appendEllipsis(truncate(getDescription(item))))
+</code></pre>
+<p>But that&rsquo;s a little awkward to read and evaluate in your head, so folks generally don&rsquo;t do that. But are one-off intermediate variables really the solution? Must we choose between being writing verbose readable code or concise unreadable code? We&rsquo;re programmers; can&rsquo;t we automate the process of passing output to input?</p>
+<p>We can do that by writing a function called <code>composeLTR</code> (read: compose left-to-right) <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>, which takes any number of functions as arguments, and then returns a new function that will pass its arguments to the first function, then pass the return value to the next function, and so on.</p>
+<p>Here&rsquo;s the sales pitch. Using <code>composeLTR</code> would transform our code into this:</p>
+<pre><code class="language-js">const extractFormattedDescription = composeLTR(
+    getDescription,
+    truncate,
+    appendEllipsis
+)
+
+extractFormattedDescription(item) // =&gt; 'This is a truncated description...'
+</code></pre>
+<p>No more setting return values on temporary values and it&rsquo;s still pretty readable. That&rsquo;s great, because I hate having to come up with unique names for everything and I hate hard-to-read code.</p>
+<h2 id="implementing-it">Implementing It</h2>
+<p>Implementing <code>composeLTR</code> isn&rsquo;t much work, but it can make your head spin a little bit at first. It looks like this:</p>
+<pre><code class="language-js">const composeLTR = (...fns) =&gt; fns.reduce((first, second) =&gt; {
+    return (...args) =&gt; second(first(...args))
+})
+</code></pre>
+<p>All it does is exactly what we said: it takes many functions and returns a new function that automates the passing of input and output between those functions.</p>
+<h2 id="curried-functions">Curried Functions</h2>
+<p>Currying is a concept named after Haskell Curry, who was a logician and mathematician by vocation. It&rsquo;s an odd term for an easier-done-than-said programming technique. I&rsquo;d rather just show you a curried function than try to explain what it is.</p>
+<p>Say you have function <code>replaceAtIdx</code>, that takes <code>index</code>, <code>value</code>, and <code>array</code>, and returns a copy of the array with the value at <code>index</code> set to value. It might look like this:</p>
+<pre><code class="language-js">const replaceAtIdx = (index, value, array) =&gt; {
+    return array.map((val, idx) =&gt; idx === index ? value : val)
+}
+
+replaceAtIdx(2, 'hi!', ['zero', 'one', 'two']) // =&gt; ['zero', 'one', 'hi!']
+</code></pre>
+<p>The curried version of <code>replaceAtIdx</code> wouldn&rsquo;t look too terribly different. It would just look like this:</p>
+<pre><code class="language-js">const replaceAtIdx = (index) =&gt; (value) =&gt; (array) =&gt; {
+    return array.map((val, idx) =&gt; idx === index ? value : val)
+}
+
+replaceAtIdx (2) ('hi') (['zero', 'one', 'two']) // =&gt; ['zero', 'one', 'hi!']
+</code></pre>
+<p>Instead of taking all three arguments at once, our curried version of <code>replaceAtIndex</code> breaks the original &ldquo;trinary&rdquo;<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> function into three &ldquo;unary&rdquo;<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup> functions, each returning another function which serves to act as a closure over the previous argument(s) and to take the next argument for the computation. When the last function is applied to its argument, then the block of code runs. That&rsquo;s really all there is to currying. You just break a function of arity N down into N functions of arity 1.</p>
+<p>Currying is admittedly a very strange concept when first learning functional programming from a procedural and/or object-oriented background. But it begins to make a lot more sense when you regularly make use of functional composition patterns, which is what we&rsquo;re trying to do!</p>
+<p>I&rsquo;ll try to illustrate with example. Let&rsquo;s adapt the code from the section on function composition:</p>
+<p>Imagine we have these three curried functions:</p>
+<pre><code class="language-js">const get = (propName) =&gt; (obj) =&gt; obj[propName]
+const truncate = (length) =&gt; (str) =&gt; str.slice(0, length)
+const append = (appendage) =&gt; (str) =&gt; `${str}${appendage}`
+</code></pre>
+<p>Since they are curried, we can use <code>composeLTR</code> like this:</p>
+<pre><code class="language-js">const extractFormattedDescription = composeLTR(
+    get('description'),
+    truncate(100),
+    append('...')
+)
+
+extractFormattedDescription(item) // =&gt; 'This is a truncated description...'
+</code></pre>
+<p>Each function requires two arguments in order to evaluate a result, but in the <code>composeLTR</code> pipeline, we only provide the first argument to each function so that we are composing the functions they return. The term for this idea of supplying some-but-not-all of the arguments a curried function requires is called &ldquo;partial function application,&rdquo; or more succinctly, &ldquo;partial application.&rdquo; Partial application is often conflated with currying because it is so closely related, but the distinction is that partial application is made possible by currying.</p>
+<p>Once you start using composition, it becomes very natural to use curried functions and partially apply them. Currying allows you to build specialized functions from more generic functions (like creating <code>getDescription</code> with <code>get('description'))</code>. Both of these together form a very powerful little technique that can transform your code base from verbose and full of intermediate variables, to very concise and expressive.</p>
+<p>Currying and composition are arguably two of the most fundamental and versatile programming design patterns for code reuse. You use currying to build specialized functions from more general ones. Simply changing an argument creates a whole new specialized function, yet you didn&rsquo;t have to write any new code; you just invoked a function! You use composition to string together however many functions you need to perform your desired transformation on the value, (leveraging your curried general functions along the way), to build up a super-specialized function that would have taken you twice the code to implement imperatively.</p>
+<p>Once you experience the level productivity and flow that comes from solving problems this way, you&rsquo;ll wonder how you ever got anything done before. And once you&rsquo;re hooked on this power, you&rsquo;ll start to get frustrated by the fact that native JS methods and most JS libraries don&rsquo;t use currying. You&rsquo;ll start to wish there were libraries that made it easier to use these basic techniques on every project because of how productive they make you and how tidy they make your code.</p>
+<p>Hmm&hellip; that sounds like a really good segue for talking about ramda.js. All of their functions are curried and designed specifically for functional composition!</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>composeLTR is commonly known as pipe <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p>trinary - arity three; i.e., takes three arguments <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p>unary - arity one; i.e., takes one argument <a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+</article>
+
+
+<div class="license markdown-body">
+    <blockquote>
+        <p>Unless otherwise noted, the content of this site is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"
+               target="_blank">CC BY-NC-SA 4.0</a>.</p>
+    </blockquote>
+</div>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/derrickbeining" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://twitter.com/derrickbeining" target="_blank"><span>Twitter</span></a>
+            </li>
+            
+            <li>
+                <a href="https://linkedin.com/in/derrickbeining" target="_blank"><span>LinkedIn</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+        </div>
+    </div>
+    
+    
+    
+    
+</aside>
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/derrickbeining" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://twitter.com/derrickbeining" target="_blank"><span>Twitter</span></a>
+            </li>
+            
+            <li>
+                <a href="https://linkedin.com/in/derrickbeining" target="_blank"><span>LinkedIn</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+        </div>
+    </div>
+    
+    
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2020-2020
+                <a href="https://derrickbeining.github.io/">Derrick Beining</a>
+                 | <a href="https://github.com/derrickbeining/derrickbeining.github.io">Source code</a> 
+                | Powered by <a href="https://github.com/amzrk2/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/combine/npm/medium-zoom@1.0.6,npm/lazysizes@5.2.2"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.21.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.21.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+</body>
+
+</html>

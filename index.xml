@@ -27,5 +27,38 @@ Here are some links to other places I&amp;rsquo;m present (more or less) on the 
       <description>&lt;p&gt;If you&amp;rsquo;re relatively new to the statically-typed functional programming scene, there&amp;rsquo;s a good chance you&amp;rsquo;ve encountered these fancy-sounding things called &amp;ldquo;algebraic data types&amp;rdquo; (often abbreviated as ADTs), and have been left feeling both a little intimidated by them and confused about what they have to do with algebra. That was my initial experience with them, anyway. I&amp;rsquo;d like to try offering a beginner-friendly introduction to them in a fashion that I think would have helped me understand them sooner.&lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title>Currying and Function Composition</title>
+      <link>https://derrickbeining.github.io/post/2018/07/04/currying-and-function-composition/</link>
+      <pubDate>Wed, 04 Jul 2018 15:57:29 -0500</pubDate>
+      
+      <guid>https://derrickbeining.github.io/post/2018/07/04/currying-and-function-composition/</guid>
+      <description>I want to demonstrate two foundational techniques you need to know to practice functional programming: function composition and curried functions. We&amp;rsquo;ll learn what these terms mean, how to implement them, and the advantages of using them.
+These techniques are applicable in any programming language where functions are first-class values, meaning they can be passed around like any primitive value. For the purposes of this post, we will be implementing these patterns in JavaScript.
+Function Composition Function composition sounds fancy, but it&amp;rsquo;s really not. It&amp;rsquo;s actually just a way to automate something we all do manually anyway.
+Imagine we have these three functions:</description>
+    </item>
+    
+    <item>
+      <title>Bootcamp Prep: How I Prepared to Get Into a Coding Bootcamp Without Any Prior Experience</title>
+      <link>https://derrickbeining.github.io/post/2017/05/01/bootcamp-prep-how-i-prepared-to-get-into-a-coding-bootcamp-without-any-prior-experience/</link>
+      <pubDate>Mon, 01 May 2017 16:14:40 -0500</pubDate>
+      
+      <guid>https://derrickbeining.github.io/post/2017/05/01/bootcamp-prep-how-i-prepared-to-get-into-a-coding-bootcamp-without-any-prior-experience/</guid>
+      <description>Now that I&amp;rsquo;ve been accepted to Fullstack Academy&amp;rsquo;s software engineering immersive program, I figured I&amp;rsquo;d share how I prepared to pass the admissions test.
+Please note that not all dev bootcamps have a coding challenge in their admissions process. Some programs are designed for people starting at square one with zero prior knowledge. However, I would like to suggest to you that you&amp;rsquo;re wasting your time and money going to a bootcamp that starts you at square one. There are tons of free online resources that you can use to learn everything they&amp;rsquo;d teach in the first month. It makes no sense to pay tons of money to be taught the most basic aspects of programming and a programming language when all of that information is low hanging fruit freely or cheaply avaliable to you all over the internet.</description>
+    </item>
+    
+    <item>
+      <title>Square One That Time I Quit Grad School to Become a Programmer</title>
+      <link>https://derrickbeining.github.io/post/2017/03/18/square-one-that-time-i-quit-grad-school-to-become-a-programmer/</link>
+      <pubDate>Sat, 18 Mar 2017 16:42:27 -0500</pubDate>
+      
+      <guid>https://derrickbeining.github.io/post/2017/03/18/square-one-that-time-i-quit-grad-school-to-become-a-programmer/</guid>
+      <description>&lt;p&gt;This watershed moment in my life seems worthy of documentation. So I thought, &amp;ldquo;Why not start a blog? The internet can always use more blogs, right?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Right?&lt;/p&gt;
+&lt;p&gt;Well, whatever. Here&amp;rsquo;s my blog.&lt;/p&gt;</description>
+    </item>
+    
   </channel>
 </rss>
