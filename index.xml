@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Derrick Beining</title>
+    <title>Hi, I&#39;m Derrick.</title>
     <link>https://derrickbeining.github.io/</link>
-    <description>Recent content on Derrick Beining</description>
+    <description>Recent content on Hi, I&#39;m Derrick.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 23 Nov 2020 14:07:36 -0500</lastBuildDate><atom:link href="https://derrickbeining.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 30 May 2019 14:07:36 -0500</lastBuildDate><atom:link href="https://derrickbeining.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>About Me</title>
       <link>https://derrickbeining.github.io/about/</link>
@@ -20,10 +20,10 @@ Here are some links to other places I&amp;rsquo;m present (more or less) on the 
     
     <item>
       <title>What&#39;s Algebraic About Algebraic Data Types?</title>
-      <link>https://derrickbeining.github.io/post/2020/11/whats-algebraic-about-algebraic-data-types/</link>
-      <pubDate>Mon, 23 Nov 2020 14:07:36 -0500</pubDate>
+      <link>https://derrickbeining.github.io/post/2019/05/30/whats-algebraic-about-algebraic-data-types/</link>
+      <pubDate>Thu, 30 May 2019 14:07:36 -0500</pubDate>
       
-      <guid>https://derrickbeining.github.io/post/2020/11/whats-algebraic-about-algebraic-data-types/</guid>
+      <guid>https://derrickbeining.github.io/post/2019/05/30/whats-algebraic-about-algebraic-data-types/</guid>
       <description>&lt;p&gt;If you&amp;rsquo;re relatively new to the statically-typed functional programming scene, there&amp;rsquo;s a good chance you&amp;rsquo;ve encountered these fancy-sounding things called &amp;ldquo;algebraic data types&amp;rdquo; (often abbreviated as ADTs), and have been left feeling both a little intimidated by them and confused about what they have to do with algebra. That was my initial experience with them, anyway. I&amp;rsquo;d like to try offering a beginner-friendly introduction to them in a fashion that I think would have helped me understand them sooner.&lt;/p&gt;</description>
     </item>
     
