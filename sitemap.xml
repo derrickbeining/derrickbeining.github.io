@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://derrickbeining.com/about/</loc>
+    <lastmod>2020-11-23T14:26:39-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://derrickbeining.com/</loc>
+    <lastmod>2020-11-23T14:07:36-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://derrickbeining.com/post/</loc>
+    <lastmod>2020-11-23T14:07:36-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://derrickbeining.com/post/2020/11/whats-algebraic-about-algebraic-data-types/</loc>
+    <lastmod>2020-11-23T14:07:36-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://derrickbeining.com/archives/</loc>
+  </url>
+  
+  <url>
+    <loc>https://derrickbeining.com/search/</loc>
+  </url>
+  
+</urlset>

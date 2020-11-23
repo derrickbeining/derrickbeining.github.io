@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta name="generator" content="Hugo 0.78.2" />
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+<meta name="msapplication-TileColor" content="#da532c" />
+<meta name="theme-color" content="#ffffff" />
+
+
+
+<title>What&#39;s Algebraic About Algebraic Data Types? - Derrick Beining</title>
+
+
+<meta name="author" content="Derrick Beining" />
+
+
+<meta name="description" content="A minimal Hugo theme with nice theme color." />
+
+
+<meta property="og:title" content="What&#39;s Algebraic About Algebraic Data Types?" />
+<meta property="og:description" content="If you&rsquo;re relatively new to the statically-typed functional programming scene, there&rsquo;s a good chance you&rsquo;ve encountered these fancy-sounding things called &ldquo;algebraic data types&rdquo; (often abbreviated as ADTs), and have been left feeling both a little intimidated by them and confused about what they have to do with algebra. That was my initial experience with them, anyway. I&rsquo;d like to try offering a beginner-friendly introduction to them in a fashion that I think would have helped me understand them sooner." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://derrickbeining.com/post/2020/11/whats-algebraic-about-algebraic-data-types/" />
+<meta property="og:image" content="https://derrickbeining.com/img/og.png"/>
+<meta property="article:published_time" content="2020-11-23T14:07:36-05:00" />
+<meta property="article:modified_time" content="2020-11-23T14:07:36-05:00" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://derrickbeining.com/img/og.png"/>
+
+<meta name="twitter:title" content="What&#39;s Algebraic About Algebraic Data Types?"/>
+<meta name="twitter:description" content="If you&rsquo;re relatively new to the statically-typed functional programming scene, there&rsquo;s a good chance you&rsquo;ve encountered these fancy-sounding things called &ldquo;algebraic data types&rdquo; (often abbreviated as ADTs), and have been left feeling both a little intimidated by them and confused about what they have to do with algebra. That was my initial experience with them, anyway. I&rsquo;d like to try offering a beginner-friendly introduction to them in a fashion that I think would have helped me understand them sooner."/>
+
+
+
+<style>
+    @media (prefers-color-scheme: dark) {
+        body[data-theme='auto'] img {
+            filter: brightness(60%);
+        }
+    }
+
+    body[data-theme='dark'] img {
+        filter: brightness(60%);
+    }
+</style>
+
+
+
+<link rel="stylesheet" href="https://derrickbeining.com/assets/css/fuji.min.css" />
+
+
+
+
+
+</head>
+
+<body data-theme="auto">
+    <script data-cfasync="false">
+  
+  var fujiThemeData = localStorage.getItem('fuji_data-theme');
+  
+  if (!fujiThemeData) {
+    localStorage.setItem('fuji_data-theme', 'auto');
+  } else {
+    
+    if (fujiThemeData !== 'auto') {
+      document.body.setAttribute('data-theme', fujiThemeData === 'dark' ? 'dark' : 'light');
+    }
+  }
+</script>
+
+    <header>
+    <div class="container-lg clearfix">
+        <div class="col-12 header">
+            <a class="title-main" href="https://derrickbeining.com">Derrick Beining</a>
+            
+        </div>
+    </div>
+</header>
+
+    <main>
+        <div class="container-lg clearfix">
+            
+            <div class="col-12 col-md-9 float-left content">
+                
+<article>
+    
+    <h2 class="post-item post-title">
+        <a href="https://derrickbeining.com/post/2020/11/whats-algebraic-about-algebraic-data-types/">What&#39;s Algebraic About Algebraic Data Types?</a>
+    </h2>
+    <div class="post-item post-meta">
+        <span><i class="iconfont icon-today-sharp"></i>&nbsp;2020-11-23</span><span><i class="iconfont icon-file-tray-sharp"></i>&nbsp;2375 words</span><span><i class="iconfont icon-time-sharp"></i>&nbsp;12 minutes</span><span><i class="iconfont icon-pricetags-sharp"></i>&nbsp;No tag</span>
+
+    </div>
+    
+    
+    <div class="post-content markdown-body">
+        <p>If you&rsquo;re relatively new to the statically-typed functional programming scene, there&rsquo;s a good chance you&rsquo;ve encountered these fancy-sounding things called &ldquo;algebraic data types&rdquo; (often abbreviated as ADTs), and have been left feeling both a little intimidated by them and confused about what they have to do with algebra. That was my initial experience with them, anyway. I&rsquo;d like to try offering a beginner-friendly introduction to them in a fashion that I think would have helped me understand them sooner.</p>
+<p>Algebraic data types without <code>Maybe</code>, <code>Either</code>, <code>These</code>, or type classes
+I&rsquo;m willing to bet you were first exposed to the concept of ADTs through a data type known as <code>Maybe</code> (a.k.a. <code>Option</code>). Then you encountered Either (a.k.a. <code>Result</code>), and then perhaps you saw These mentioned somewhere. These are indeed algebraic data types, but it&rsquo;s not immediately obvious what is algebraic about them, and, to add to the confusion, they are often presented as examples of some other mathematical-sounding concepts that one might mistakenly interpret as the source of their algebraic-ness. I for one thought they were algebraic because of something to do with them having type classes like functor and monad with special &ldquo;laws&rdquo; and what-have-you, and I didn&rsquo;t realize until much later that those concepts were not directly related to algebraic data types.</p>
+<p>The reality is that types like <code>Maybe</code> and <code>Either</code> aren&rsquo;t any more algebraic than most of the other types you see every day in TypeScript (or whatever language you&rsquo;re using). For example, this union of strings is an algebraic data type:</p>
+<pre><code class="language-ts">type Size
+	= &quot;small&quot;
+	| &quot;medium&quot;
+	| &quot;large&quot;
+</code></pre>
+<p>And so is this interface for a customer:</p>
+<pre><code class="language-ts">interface Customer {
+  isPremiumMember: boolean
+  shirtSize: Size
+}
+</code></pre>
+<p>Actually, if my understanding is correct, almost every type in TypeScript (or a similar language) technically qualifies as an algebraic data type. If that&rsquo;s the case, what is this &ldquo;algebra&rdquo; we keep referring to? What is algebraic about algebraic data types?</p>
+<h2 id="cardinality-the-numerical-value-of-a-type">Cardinality: the numerical value of a type</h2>
+<p>The first thing you need to know is that there is a numerical relationship between types and the runtime values they represent. This numerical relationship is simple: there is a quantifiable number of runtime values that inhabit every type, anywhere from zero to positive infinity.</p>
+<p>For example, consider these primitive TypeScript types:</p>
+<ul>
+<li><code>never</code> has zero possible runtime values</li>
+<li><code>null</code> has one possible runtime value, namely, <code>null</code></li>
+<li><code>boolean</code> has two possible runtime values: <code>true</code> and <code>false</code></li>
+<li><code>number</code> and string have somewhere around infinite possible runtime values</li>
+</ul>
+<p>The case is the same for user-defined types:</p>
+<ul>
+<li><code>type Size = &quot;small&quot; | &quot;medium&quot; | &quot;large&quot;</code> has three runtime values, namely, the string literals you see in the type declaration.</li>
+<li><code>Customer</code> (defined above) has six possible runtime values, which you can see if you list out every possible combination of values for its two fields.</li>
+<li></li>
+</ul>
+<p>The number of values that inhabit a type is referred to as the type&rsquo;s <em>cardinality</em>, which is a term borrowed from set theory. It refers to the number of members in a set. Once we recognize that types have such numerical value by way of cardinality, their algebraic-ness begins to come into focus. Algebraic data types are algebraic because you can reason about their cardinality with basic algebra. That&rsquo;s all.</p>
+<h2 id="sums-and-products">Sums and Products</h2>
+<p>There are two main algebraic data types that you will use day-in and day-out; in fact, you&rsquo;re already using them: sum types and product types. Their names give you a hint as to how their cardinalities are calculated.</p>
+<p>Sum types and product types both combine other types to form a new type, but they do so in very different ways, which significantly affects how we calculate their cardinalities.</p>
+<h2 id="sum-types">Sum Types</h2>
+<p>Sum types are so-called because they combine other types in such a way that their cardinality is the sum of the cardinalities of the other types (minus any duplicate members that might exist). The TypeScript documentation call this a union type, which is a type that <em>&ldquo;describes a value that can be one of several types.&quot;</em> We call the &ldquo;several types&rdquo; that make up a sum type its <em>variants</em>. The canonical sum type is boolean whose members may be either the type of literal true or the type of literal false.</p>
+<p>Our <code>Size</code> type from earlier is also an example of a sum or union type:</p>
+<pre><code class="language-ts">type Size
+  = &quot;small&quot;
+  | &quot;medium&quot;
+  | &quot;large&quot;
+</code></pre>
+<p>We might read this type declaration as follows: A value of type <code>Size</code> is a member of either the type of literal <code>&quot;small&quot;</code>, the type of the literal <code>&quot;medium&quot;</code>, or the type of the literal <code>&quot;large&quot;</code>. The logic of either-or translates to each variant&rsquo;s members being joined with the others' to form a larger set, whose total number of members is the cardinality of the sum type. Since each of these variants is a string literal type, they each have a cardinality of 1. To find the cardinality of Size we perform simple addition:</p>
+<pre><code class="language-ts">type Size = &quot;small&quot; | &quot;medium&quot; | &quot;large&quot;
+//    3   =    1    +     1    +     1
+</code></pre>
+<p>This is the algebra of sum types. It holds up no matter what types you throw into a sum type. Here&rsquo;s a slightly more complex example, and it still just amounts to basic addition:</p>
+<pre><code class="language-ts">type Size = RegularSize | TallSize | XtraSize
+//     9  =       3     +     3    +     3
+
+type RegularSize = &quot;small&quot; | &quot;medium&quot; | &quot;large&quot;
+
+type TallSize = &quot;small-tall&quot; | &quot;medium-tall&quot; | &quot;large-tall&quot;
+
+type XtraSize = &quot;xsmall&quot; | &quot;xlarge&quot; | &quot;xxlarge&quot;
+</code></pre>
+<p>Now here&rsquo;s a curveball: What would happen if we threw string into the Size union type? Is it still an algebraic data type? What would be its cardinality?</p>
+<pre><code class="language-ts">type Size = RegularSize | TallSize | XtraSize | string
+//     ?  =       3     +     3    +     3    +    ???
+</code></pre>
+<p>Well, what is the cardinality of <code>string</code>? If we use our imaginations a little, we can actually view string as a sum type whose variants are every possible combination of string characters, like this:</p>
+<pre><code class="language-ts">type string
+  = &quot;&quot;
+  | &quot; &quot;
+  | // ...spaces to infinity
+  | &quot;a&quot;
+  | &quot;aa&quot;
+  | // ...&quot;a&quot;s to infinity
+  | // ...and so on
+</code></pre>
+<p>It would seem then that <code>string</code> is a sum type with an infinite cardinality. So the algebra of sum types still applies to Size, even if it&rsquo;s a bit odd:</p>
+<pre><code class="language-ts">type Size    = RegularSize | TallSize | XtraSize | string
+// Infinity  =       3     +     3    +     3    +   Infinity
+</code></pre>
+<p>Of course, this is a pretty bogus type that you&rsquo;d never write. But it shows that the algebra of sum types holds even if we&rsquo;re dealing with types of infinite cardinality.</p>
+<p>With this understanding of sum types, we can now see what is algebraic about data types like <code>Maybe&lt;T&gt;</code> and <code>Either&lt;L, R&gt;</code>. They are just examples of sum types. However, because they have generic type parameters, we don&rsquo;t have enough information to determine their cardinality right away.</p>
+<pre><code class="language-ts">interface Nothing { tag: &quot;Nothing&quot; }
+interface Just&lt;T&gt; { tag: &quot;Just&quot;, value: T }
+
+type Maybe&lt;T&gt; = Nothing | Just&lt;T&gt;
+//         ?  =    1    +    ?
+</code></pre>
+<p>Because we don&rsquo;t know what T is, we can&rsquo;t know its cardinality, and therefore we can&rsquo;t know the cardinality of Maybe<T>. But since we know the algebra of sum types, we can still reason about Maybe algebraically. Just replace the question marks with variables and suddenly we see that it really is algebra!</p>
+<pre><code class="language-ts">type Maybe&lt;T&gt; = Nothing | Just&lt;T&gt;
+//         y  =    1    +    x
+</code></pre>
+<p>Once <code>Maybe</code> is supplied with a type argument, we can then plug in the numbers to solve for the cardinality. For example, <code>Maybe&lt;Size&gt;</code> would work out like so:</p>
+<pre><code class="language-ts">Maybe&lt;Size&gt; = Nothing | Just&lt;Size&gt;
+//   4      =    1    +    3
+</code></pre>
+<p><code>Either</code> is similarly straightforward:</p>
+<pre><code class="language-ts">interface Left&lt;L&gt; { tag: &quot;Left&quot;, left: L }
+interface Right&lt;R&gt; { tag: &quot;Right&quot;, right: R }
+
+type Either&lt;L, R&gt; = Left&lt;L&gt; | Right&lt;R&gt;
+//         z      =    x    +    y
+</code></pre>
+<p>If we had <code>Either&lt;boolean, Size&gt;</code>, then finding its cardinality is as simple as 2 + 3 = 5.</p>
+<p>That about sums it up for sum types.</p>
+<h2 id="product-types">Product Types</h2>
+<p>Product types are so-called because they combine other types in such a way that their cardinality is the result of multiplying the cardinalities of the other types they combine. The way they do this is by combining multiple types into a structure. In TypeScript, the structures we can use for product types are tuples and object types with static keys (which can be expressed as interfaces, classes, and object literal type aliases). Our Customer interface from earlier is an example of a product type:</p>
+<pre><code class="language-ts">interface Customer {
+  isPremiumMember: boolean
+  shirtSize: Size
+}
+</code></pre>
+<p>It combines <code>Size</code> (cardinality 3) and <code>boolean</code> (cardinality 2) into a structure by specifying these types on keys of an object. We can count the number of values that inhabit the type of Customer by listing out all the possibilities:</p>
+<ol>
+<li><code>{ isPremiumMember: true, shirtSize: &quot;small&quot; }</code></li>
+<li><code>{ isPremiumMember: true, shirtSize: &quot;medium&quot; }</code></li>
+<li><code>{ isPremiumMember: true, shirtSize: &quot;large&quot; }</code></li>
+<li><code>{ isPremiumMember: false, shirtSize: &quot;small&quot; }</code></li>
+<li><code>{ isPremiumMember: false, shirtSize: &quot;medium&quot; }</code></li>
+<li><code>{ isPremiumMember: false, shirtSize: &quot;large&quot; }</code></li>
+</ol>
+<p>However, on a more complicated product type, it would be unwieldy, if not impossible, to try to find the cardinality by listing out of possible values. Instead we can use the algebra of product types to calculate it&rsquo;s cardinality:</p>
+<pre><code class="language-ts">// Size x boolean = Customer
+//    3 x 2       = 6
+</code></pre>
+<p>If <code>Customer</code> had another field, or ten more, it&rsquo;s still just as easy to calculate its cardinality:</p>
+<pre><code class="language-ts">interface Customer {
+  favoriteFood: Food
+  isPremiumMember: boolean
+  shirtSize: Size
+}
+
+type Food
+  = &quot;hotdog&quot;
+  | &quot;burger&quot;
+  | &quot;pizza&quot;
+  | &quot;salad&quot;
+  | &quot;pretzel&quot;
+  | &quot;nachos&quot;
+</code></pre>
+<p>Now <code>Customer</code> combines three types into a structure, and look how much its cardinality has grown:</p>
+<pre><code class="language-ts">// Food x Size x boolean = Customer
+//    6 x   3  x  2      = 36
+</code></pre>
+<p>The algebra of product types work the same regardless of the structure we choose. If for some reason we decided to represent Customer as a tuple, the math would work out the same:</p>
+<pre><code class="language-ts">type Customer = [Food, Size, boolean]
+//         36 =   6  x   3  x   2
+</code></pre>
+<p>This makes sense because we&rsquo;ve simply replaced the keys of an object/record/struct with the indexes of a tuple.</p>
+<p>When the product type we&rsquo;re dealing with is generic (i.e. it has type parameters, like <code>Maybe&lt;T&gt;</code> and <code>Either&lt;L, R&gt;</code>), we are left with a simple equation to be solved when the type is fully resolved. As an example, we can look at the canonical product type known as <code>Pair&lt;A, B&gt;</code>, a simple structure over two types. Again, it could be implemented as either a tuple or object type. For this example we&rsquo;ll use a tuple:</p>
+<pre><code class="language-ts">type Pair&lt;A, B&gt; = [A, B]
+</code></pre>
+<p>Since we do not know what A and B are yet, all we know is the equation to solve for the cardinality of <code>Pair&lt;A, B&gt;</code>:</p>
+<pre><code class="language-ts">type Pair&lt;A, B&gt; = [A, B]
+//            z =  x * y
+</code></pre>
+<p>So if we had a function that returned <code>Pair&lt;boolean, Size&gt;</code>, we just plug in A = 2 and B = 3 and find that our function can only return 2 * 3 or 6 possible values.</p>
+<p>Take a look at these other Pairs and use the algebra of product types to determine their cardinality:</p>
+<ul>
+<li><code>Pair&lt;null, null&gt;</code></li>
+<li><code>Pair&lt;never, Food&gt;</code></li>
+<li><code>Pair&lt;boolean, Maybe&lt;boolean&gt;&gt;</code></li>
+<li><code>Pair&lt;Either&lt;Error, Customer&gt;, Maybe&lt;Size&gt;&gt;</code> (use the original <code>Customer</code>)</li>
+</ul>
+<p>By understanding the algebra of sums and products, one can easily calculate the number of possibilities these types encode. That&rsquo;s the power of algebraic data types!</p>
+<h2 id="why-the-algebra-of-types-matters">Why the Algebra of Types Matters</h2>
+<p>After getting through all that, it&rsquo;s reasonable to wonder why any of this matters. So types have cardinality and I can calculate the cardinality of a type with some basic math. So what?</p>
+<p>In my own experience, the main advantage I&rsquo;ve experienced from understanding the algebra of types is that it makes me much more aware of how software complexity is directly tied to the aggregate complexity of the data models we choose to use throughout our programs, and it enables me to design better data models that reduce the cognitive complexity of writing correct, error-free programs.</p>
+<p>Think about what a type&rsquo;s cardinality translates to in a program: cases or branches that need to be handled, and we all know how tough heavily branching code is to deal with. Imagine implementing a function whose argument has a cardinality of 4 versus a function that whose argument has a cardinality of 36 (or Infinity!). That function needs to handle every possible case in order to avoid a runtime error or some other higher level business logic error. That&rsquo;s much easier to do when your cardinality is low. Often times, a high cardinality is indicative of a poorly designed data model, and understanding the algebra of types can help you design a simpler or more accurate one that makes your program less complicated to reason about.</p>
+<h2 id="what-we-learned">What We Learned</h2>
+<p>Algebraic data types sound complicated, but they&rsquo;re really quite simple and surprisingly ubiquitous. We can view types in terms of the set of values that the compiler says are valid members of that type, which means we can think about types in terms of a set&rsquo;s cardinality, that is, the number of members in the set. When we see types in terms of cardinality, it&rsquo;s easier to see what math might have to do with types.</p>
+<p>Sum types and product type are the two algebraic data types we commonly make use of in TypeScript (and many other typed languages).</p>
+<ul>
+<li>A sum type is a type whose members may be members of one its variant types, and its cardinality is the sum or the cardinalities of the variants. <code>boolean</code> is the canonical example of a sum type. The well-known <code>Maybe</code> and <code>Either</code> data types are examples of sum types as well.</li>
+<li>A product type is a type that combines other types into a structure, like a tuple or object/struct. The cardinality of a product type is the product of the cardinalities of the types it combines. The canonical example of a product type is <code>Pair&lt;A, B&gt;</code>, which is simple structure that holds two values, one of any type <code>A</code> and the other of some other type <code>B</code>.</li>
+</ul>
+<p>Understanding the algebra of types helps us to avoid accidental complexity in our programs by designing better data types to model the problems we&rsquo;re solving.</p>
+    </div>
+</article>
+
+
+<div class="license markdown-body">
+    <blockquote>
+        <p>Unless otherwise noted, the content of this site is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"
+               target="_blank">CC BY-NC-SA 4.0</a>.</p>
+    </blockquote>
+</div>
+
+
+
+            </div>
+            <aside class="col-12 col-md-3 float-left sidebar">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/derrickbeining" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://twitter.com/derrickbeining" target="_blank"><span>Twitter</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>TOC</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#cardinality-the-numerical-value-of-a-type">Cardinality: the numerical value of a type</a></li>
+    <li><a href="#sums-and-products">Sums and Products</a></li>
+    <li><a href="#sum-types">Sum Types</a></li>
+    <li><a href="#product-types">Product Types</a></li>
+    <li><a href="#why-the-algebra-of-types-matters">Why the Algebra of Types Matters</a></li>
+    <li><a href="#what-we-learned">What We Learned</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+</aside>
+        </div>
+        <div class="btn">
+    <div class="btn-menu" id="btn-menu">
+        <i class="iconfont icon-grid-sharp"></i>
+    </div>
+    <div class="btn-toggle-mode">
+        <i class="iconfont icon-contrast-sharp"></i>
+    </div>
+    <div class="btn-scroll-top">
+        <i class="iconfont icon-chevron-up-circle-sharp"></i>
+    </div>
+</div>
+<aside class="sidebar-mobile" style="display: none;">
+  <div class="sidebar-wrapper">
+    
+    <div class="sidebar-item sidebar-pages">
+        <h3>Pages</h3>
+        <ul>
+            
+            <li>
+                <a href="/">Home</a>
+            </li>
+            
+            <li>
+                <a href="/archives/">Archives</a>
+            </li>
+            
+            <li>
+                <a href="/about/">About</a>
+            </li>
+            
+            <li>
+                <a href="/search/">Search</a>
+            </li>
+            
+            <li>
+                <a href="/index.xml">RSS</a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-links">
+        <h3>Links</h3>
+        <ul>
+            
+            <li>
+                <a href="https://github.com/derrickbeining" target="_blank"><span>GitHub</span></a>
+            </li>
+            
+            <li>
+                <a href="https://twitter.com/derrickbeining" target="_blank"><span>Twitter</span></a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="sidebar-item sidebar-tags">
+        <h3>Tags</h3>
+        <div>
+            
+        </div>
+    </div>
+    
+    
+    
+    <div class="sidebar-item sidebar-toc">
+        <h3>TOC</h3>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#cardinality-the-numerical-value-of-a-type">Cardinality: the numerical value of a type</a></li>
+    <li><a href="#sums-and-products">Sums and Products</a></li>
+    <li><a href="#sum-types">Sum Types</a></li>
+    <li><a href="#product-types">Product Types</a></li>
+    <li><a href="#why-the-algebra-of-types-matters">Why the Algebra of Types Matters</a></li>
+    <li><a href="#what-we-learned">What We Learned</a></li>
+  </ul>
+</nav>
+    </div>
+    
+    
+  </div>
+</aside>
+    </main>
+
+    <footer>
+    <div class="container-lg clearfix">
+        <div class="col-12 footer">
+            
+            <span>&copy; 2020-2020
+                <a href="https://derrickbeining.com">Derrick Beining</a>
+                 | <a href="https://github.com/derrickbeining/personal-website">Source code</a> 
+                | Powered by <a href="https://github.com/amzrk2/hugo-theme-fuji/"
+                   target="_blank">Fuji-v2</a> &amp; <a href="https://gohugo.io/"
+                                                    target="_blank">Hugo</a> 
+            </span>
+        </div>
+    </div>
+</footer>
+
+    
+<script defer src="https://cdn.jsdelivr.net/combine/npm/medium-zoom@1.0.6,npm/lazysizes@5.2.2"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.21.0/components/prism-core.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.21.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+
+<script defer src="/assets/js/fuji.min.js"></script>
+
+
+</body>
+
+</html>
